@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - AdminLine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --text-light: #f8fafc;
+            --text-dark: #1f2937;
+            --text-gray: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.2);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --danger-color: #ef4444;
+            --border-radius: 0.75rem;
+            --sidebar-width: 240px;
+            --header-height: 64px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('./images/union.webp');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .auth-container {
+            max-width: 400px;
+            margin: auto;
+            background: rgba(17, 24, 39, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .auth-container h1 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.75rem;
+            color: var(--text-light);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            background-color: rgba(0, 0, 0, 0.2);
+            color: var(--text-light);
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input::placeholder {
+            color: var(--text-gray);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.85rem;
+            border: none;
+            border-radius: var(--border-radius);
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .auth-toggle {
+            text-align: center;
+            margin-top: 1rem;
+            color: var(--text-gray);
+        }
+
+        .auth-toggle a {
+            color: var(--text-light);
+            font-weight: 600;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        #dashboardContainer{
+            background-color: #f8fafc;
+            color: var(--text-dark);
+            padding: 0;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header del dashboard */
+        .dashboard-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 0 1.5rem;
+            height: var(--header-height);
+            background-color: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .dashboard-header h1 { 
+            font-size: 1.5rem; 
+            color: var(--text-dark);
+        }
+        
+        .logout-btn { 
+            background-color: var(--danger-color); 
+            color: white; 
+            border: none; 
+            padding: 0.5rem 1rem; 
+            border-radius: var(--border-radius); 
+            cursor: pointer; 
+            font-weight: 600; 
+        }
+        
+        /* Layout principal */
+        .dashboard-main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: white;
+            border-right: 1px solid #e5e7eb;
+            padding: 1rem 0;
+            overflow-y: auto;
+        }
+        
+        .sidebar-category {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+        
+        .sidebar-category:hover {
+            background-color: #f1f5f9;
+        }
+        
+        .sidebar-category.active {
+            background-color: #e0e7ff;
+            color: var(--primary-color);
+        }
+        
+        .sidebar-category i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .category-count {
+            margin-left: auto;
+            background-color: #e5e7eb;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.75rem;
+        }
+        
+        /* Contenido principal */
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* Barra de herramientas */
+        .toolbar {
+            padding: 0.5rem 1rem;
+            background-color: white;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .toolbar-btn {
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--text-dark);
+        }
+        
+        .toolbar-btn:hover {
+            background-color: #f1f5f9;
+        }
+        
+        /* Lista de mensajes */
+        .messages-list {
+            flex: 1;
+            overflow-y: auto;
+            background-color: white;
+        }
+        
+        .message-row {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .message-row:hover {
+            background-color: #f8fafc;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .message-row.unread {
+            background-color: #f0f9ff;
+        }
+        
+        .message-checkbox {
+            margin-right: 0.75rem;
+        }
+        
+        .message-star {
+            margin-right: 0.75rem;
+            color: #9ca3af;
+            cursor: pointer;
+        }
+        
+        .message-star.starred {
+            color: #f59e0b;
+        }
+        
+        .message-sender {
+            font-weight: 600;
+            width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-right: 1rem;
+        }
+        
+        .message-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .message-subject {
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-bottom: 0.25rem;
+        }
+        
+        .message-preview {
+            color: #6b7280;
+            font-size: 0.875rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .message-date {
+            color: #6b7280;
+            font-size: 0.75rem;
+            margin-left: 1rem;
+            white-space: nowrap;
+        }
+        
+        /* Panel de vista de mensaje */
+        .message-view {
+            display: none;
+            flex-direction: column;
+            padding: 1.5rem;
+            background-color: white;
+            overflow-y: auto;
+        }
+        
+        .message-view-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .message-view-subject {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+        
+        .message-view-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .message-view-sender {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .message-view-date {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .message-view-body {
+            line-height: 1.6;
+            color: var(--text-dark);
+            white-space: pre-wrap;
+        }
+        
+        .back-to-list {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: #f1f5f9;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .back-to-list {
+                display: flex;
+            }
+            
+            .message-sender {
+                width: 120px;
+            }
+        }
+
+        #loadingContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+        }
+
+        #loadingContainer.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .terminal-window {
+            width: 90%;
+            max-width: 800px;
+            height: 90%;
+            max-height: 600px;
+            background-color: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 5px;
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.2);
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+        }
+        .terminal-header { 
+            background: #333; 
+            color: #eee; 
+            padding: 0.5rem; 
+            font-weight: bold; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .terminal-body { 
+            padding: 1rem; 
+            flex-grow: 1; 
+            overflow-y: auto; 
+            font-size: 1rem; 
+            color: #39ff14; 
+        }
+        .terminal-body p, .terminal-body div { margin-bottom: 0.5rem; }
+        .terminal-body .log-line { white-space: pre-wrap; }
+
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background-color: #222;
+            margin-top: 1rem;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #39ff14;
+            transition: width 0.3s ease;
+        }
+
+        .time-remaining {
+            font-size: 0.8rem;
+            color: #39ff14;
+            margin-top: 0.5rem;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+        .typing::after {
+            content: '_';
+            animation: blink 1s step-end infinite;
+        }
+        
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: var(--text-gray);
+        }
+        .footer-collab { display: flex; align-items: center; gap: 1rem; }
+        .footer-collab span { font-size: 0.8rem; }
+        .footer-social svg { width: 28px; height: 28px; transition: transform 0.3s ease; }
+        .footer-social svg:hover { transform: scale(1.1); }
+
+        .alert { padding: 1rem; border-radius: var(--border-radius); margin-bottom: 1rem; text-align: center; }
+        .alert-danger { background-color: rgba(239, 68, 68, 0.2); color: #fecaca; }
+        .alert-success { background-color: rgba(34, 197, 94, 0.2); color: #bbf7d0; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="authContainer">
+            <div class="auth-container">
+                <div id="loginView">
+                    <h1>Iniciar Sesión</h1>
+                    <div id="loginAlert" class="alert alert-danger hidden"></div>
+                    <form id="loginForm">
+                        <div class="form-group"><label for="loginEmail">Correo</label><input type="email" id="loginEmail" required></div>
+                        <div class="form-group"><label for="loginPassword">Contraseña</label><input type="password" id="loginPassword" required></div>
+                        <button type="submit" class="btn">Ingresar</button>
+                    </form>
+                    <p class="auth-toggle">¿No tienes cuenta? <a id="showRegister">Regístrate</a></p>
+                </div>
+                <div id="registerView" class="hidden">
+                    <h1>Crear Cuenta</h1>
+                    <div id="registerAlert" class="alert hidden"></div>
+                    <form id="registerForm">
+                        <div class="form-group"><label for="registerEmail">Correo</label><input type="email" id="registerEmail" required></div>
+                        <div class="form-group"><label for="registerPassword">Contraseña</label><input type="password" id="registerPassword" required></div>
+                        <div class="form-group"><label for="registerPasswordConfirm">Confirmar Contraseña</label><input type="password" id="registerPasswordConfirm" required></div>
+                        <button type="submit" class="btn">Registrar</button>
+                    </form>
+                    <p class="auth-toggle">¿Ya tienes cuenta? <a id="showLogin">Inicia Sesión</a></p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="verificationContainer" class="hidden auth-container">
+             <h1>Verifica tu Correo</h1>
+             <p style="text-align: center; line-height: 1.6;">Te enviamos un enlace de verificación. Por favor, haz clic en él para acceder.</p>
+        </div>
+        
+        <div id="loadingContainer" class="hidden">
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <span>Terminal - AdminLine</span>
+                    <span id="timer">12.0s</span>
+                </div>
+                <div class="terminal-body">
+                    <p>> <span id="welcome-message"></span></p>
+                    <p>> <span id="loading-status"></span></p>
+                    <div id="log-output"></div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progress-bar"></div>
+                    </div>
+                    <div class="time-remaining" id="time-remaining">Tiempo restante: 12.0 segundos</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="dashboardContainer" class="hidden">
+            <div class="dashboard-header">
+                <h1>AdminLine Mensajes</h1>
+                <button id="logoutButton" class="logout-btn">Cerrar Sesión</button>
+            </div>
+            
+            <div class="dashboard-main">
+                <!-- Sidebar con categorías -->
+                <div class="sidebar">
+                    <div class="sidebar-category active" data-category="inbox">
+                        <i class="fas fa-inbox"></i>
+                        <span>Recibidos</span>
+                        <span class="category-count" id="inbox-count">0</span>
+                    </div>
+                    <div class="sidebar-category" data-category="starred">
+                        <i class="fas fa-star"></i>
+                        <span>Destacados</span>
+                        <span class="category-count" id="starred-count">0</span>
+                    </div>
+                    <div class="sidebar-category" data-category="archived">
+                        <i class="fas fa-archive"></i>
+                        <span>Archivados</span>
+                        <span class="category-count" id="archived-count">0</span>
+                    </div>
+                    <div class="sidebar-category" data-category="deleted">
+                        <i class="fas fa-trash"></i>
+                        <span>Eliminados</span>
+                        <span class="category-count" id="deleted-count">0</span>
+                    </div>
+                </div>
+                
+                <!-- Área de contenido principal -->
+                <div class="content-area">
+                    <button class="back-to-list" id="backToList">
+                        <i class="fas fa-arrow-left"></i>
+                        Volver a la lista
+                    </button>
+                    
+                    <!-- Barra de herramientas -->
+                    <div class="toolbar">
+                        <div class="toolbar-btn" id="markAsReadBtn" title="Marcar como leído">
+                            <i class="fas fa-envelope-open"></i>
+                        </div>
+                        <div class="toolbar-btn" id="archiveBtn" title="Archivar">
+                            <i class="fas fa-archive"></i>
+                        </div>
+                        <div class="toolbar-btn" id="deleteBtn" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Lista de mensajes -->
+                    <div class="messages-list" id="messagesList">
+                        <!-- Los mensajes se cargarán aquí dinámicamente -->
+                    </div>
+                    
+                    <!-- Vista detallada de mensaje -->
+                    <div class="message-view" id="messageView">
+                        <div class="message-view-header">
+                            <h2 class="message-view-subject" id="view-subject"></h2>
+                            <div class="message-view-meta">
+                                <div>
+                                    <div class="message-view-sender" id="view-sender"></div>
+                                    <div id="view-company"></div>
+                                </div>
+                                <div class="message-view-date" id="view-date"></div>
+                            </div>
+                        </div>
+                        <div class="message-view-body" id="view-body"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>© 2025 Adminline. Todos los derechos reservados.</span>
+        <div class="footer-collab">
+            <span>En colaboración con Byte</span>
+            <a href="https://www.instagram.com/stories/admin.line3/" target="_blank" class="footer-social">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 132.004 132"><defs><linearGradient id="b"><stop offset="0" stop-color="#3771c8"/><stop stop-color="#3771c8" offset=".128"/><stop offset="1" stop-color="#60f" stop-opacity="0"/></linearGradient><linearGradient id="a"><stop offset="0" stop-color="#fd5"/><stop offset=".1" stop-color="#fd5"/><stop offset=".5" stop-color="#ff543e"/><stop offset="1" stop-color="#c837ab"/></linearGradient><radialGradient id="c" cx="158.429" cy="578.088" r="65" xlink:href="#a" gradientUnits="userSpaceOnUse" gradientTransform="matrix(0 -1.98198 1.8439 0 -1031.402 454.004)" fx="158.429" fy="578.088"/><radialGradient id="d" cx="147.694" cy="473.455" r="65" xlink:href="#b" gradientUnits="userSpaceOnUse" gradientTransform="matrix(.17394 .86872 -3.5818 .71718 1648.348 -458.493)" fx="147.694" fy="473.455"/></defs><path fill="url(#c)" d="M65.03 0C37.888 0 29.95.028 28.407.156c-5.57.463-9.036 1.34-12.812 3.22-2.91 1.445-5.205 3.12-7.47 5.468C4 13.126 1.5 18.394.595 24.656c-.44 3.04-.568 3.66-.594 19.188-.01 5.176 0 11.988 0 21.125 0 27.12.03 35.05.16 36.59.45 5.42 1.3 8.83 3.1 12.56 3.44 7.14 10.01 12.5 17.75 14.5 2.68.69 5.64 1.07 9.44 1.25 1.61.07 18.02.12 34.44.12 16.42 0 32.84-.02 34.41-.1 4.4-.207 6.955-.55 9.78-1.28 7.79-2.01 14.24-7.29 17.75-14.53 1.765-3.64 2.66-7.18 3.065-12.317.088-1.12.125-18.977.125-36.81 0-17.836-.04-35.66-.128-36.78-.41-5.22-1.305-8.73-3.127-12.44-1.495-3.037-3.155-5.305-5.565-7.624C116.9 4 111.64 1.5 105.372.596 102.335.157 101.73.027 86.19 0H65.03z" transform="translate(1.004 1)"/><path fill="url(#d)" d="M65.03 0C37.888 0 29.95.028 28.407.156c-5.57.463-9.036 1.34-12.812 3.22-2.91 1.445-5.205 3.12-7.47 5.468C4 13.126 1.5 18.394.595 24.656c-.44 3.04-.568 3.66-.594 19.188-.01 5.176 0 11.988 0 21.125 0 27.12.03 35.05.16 36.59.45 5.42 1.3 8.83 3.1 12.56 3.44 7.14 10.01 12.5 17.75 14.5 2.68.69 5.64 1.07 9.44 1.25 1.61.07 18.02.12 34.44.12 16.42 0 32.84-.02 34.41-.1 4.4-.207 6.955-.55 9.78-1.28 7.79-2.01 14.24-7.29 17.75-14.53 1.765-3.64 2.66-7.18 3.065-12.317.088-1.12.125-18.977.125-36.81 0-17.836-.04-35.66-.128-36.78-.41-5.22-1.305-8.73-3.127-12.44-1.495-3.037-3.155-5.305-5.565-7.624C116.9 4 111.64 1.5 105.372.596 102.335.157 101.73.027 86.19 0H65.03z" transform="translate(1.004 1)"/><path fill="#fff" d="M66.004 18c-13.036 0-14.672.057-19.792.29-5.11.234-8.598 1.043-11.65 2.23-3.157 1.226-5.835 2.866-8.503 5.535-2.67 2.668-4.31 5.346-5.54 8.502-1.19 3.053-2 6.542-2.23 11.65C18.06 51.327 18 52.964 18 66s.058 14.667.29 19.787c.235 5.11 1.044 8.598 2.23 11.65 1.227 3.157 2.867 5.835 5.536 8.503 2.667 2.67 5.345 4.314 8.5 5.54 3.054 1.187 6.543 1.996 11.652 2.23 5.12.233 6.755.29 19.79.29 13.037 0 14.668-.057 19.788-.29 5.11-.234 8.602-1.043 11.656-2.23 3.156-1.226 5.83-2.87 8.497-5.54 2.67-2.668 4.31-5.346 5.54-8.502 1.18-3.053 1.99-6.542 2.23-11.65.23-5.12.29-6.752.29-19.788 0-13.036-.06-14.672-.29-19.792-.24-5.11-1.05-8.598-2.23-11.65-1.23-3.157-2.87-5.835-5.54-8.503-2.67-2.67-5.34-4.31-8.5-5.535-3.06-1.187-6.55-1.996-11.66-2.23-5.12-.233-6.75-.29-19.79-.29zm-4.306 8.65c1.278-.002 2.704 0 4.306 0 12.816 0 14.335.046 19.396.276 4.68.214 7.22.996 8.912 1.653 2.24.87 3.837 1.91 5.516 3.59 1.68 1.68 2.72 3.28 3.592 5.52.657 1.69 1.44 4.23 1.653 8.91.23 5.06.28 6.58.28 19.39s-.05 14.33-.28 19.39c-.214 4.68-.996 7.22-1.653 8.91-.87 2.24-1.912 3.835-3.592 5.514-1.68 1.68-3.275 2.72-5.516 3.59-1.69.66-4.232 1.44-8.912 1.654-5.06.23-6.58.28-19.396.28-12.817 0-14.336-.05-19.396-.28-4.68-.216-7.22-.998-8.913-1.655-2.24-.87-3.84-1.91-5.52-3.59-1.68-1.68-2.72-3.276-3.592-5.517-.657-1.69-1.44-4.23-1.653-8.91-.23-5.06-.276-6.58-.276-19.398s.046-14.33.276-19.39c.214-4.68.996-7.22 1.653-8.912.87-2.24 1.912-3.84 3.592-5.52 1.68-1.68 3.28-2.72 5.52-3.592 1.692-.66 4.233-1.44 8.913-1.655 4.428-.2 6.144-.26 15.09-.27zm29.928 7.97c-3.18 0-5.76 2.577-5.76 5.758 0 3.18 2.58 5.76 5.76 5.76 3.18 0 5.76-2.58 5.76-5.76 0-3.18-2.58-5.76-5.76-5.76zm-25.622 6.73c-13.613 0-24.65 11.037-24.65 24.65 0 13.613 11.037 24.645 24.65 24.645C79.617 90.645 90.65 79.613 90.65 66S79.616 41.35 66.003 41.35zm0 8.65c8.836 0 16 7.163 16 16 0 8.836-7.164 16-16 16-8.837 0-16-7.164-16-16 0-8.837 7.163-16 16-16z"/>
+                </svg>
+            </a>
+        </div>
+    </footer>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAp8Gnx39dYjYI9bMOIsHxSuqX4UdWDya4",
+            authDomain: "adminline-database.firebaseapp.com",
+            projectId: "adminline-database",
+            storageBucket: "adminline-database.appspot.com",
+            messagingSenderId: "43712357414",
+            appId: "1:43712357414:web:b88e5612b619d56dc872e7"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        const authContainer = document.getElementById('authContainer');
+        const dashboardContainer = document.getElementById('dashboardContainer');
+        const verificationContainer = document.getElementById('verificationContainer');
+        const loadingContainer = document.getElementById('loadingContainer');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const logoutButton = document.getElementById('logoutButton');
+        const messagesList = document.getElementById('messagesList');
+        const messageView = document.getElementById('messageView');
+        const backToListBtn = document.getElementById('backToList');
+        const footer = document.querySelector('.footer');
+        
+        // Botones de herramientas
+        const markAsReadBtn = document.getElementById('markAsReadBtn');
+        const archiveBtn = document.getElementById('archiveBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+        
+        // Elementos de la vista de mensaje
+        const viewSubject = document.getElementById('view-subject');
+        const viewSender = document.getElementById('view-sender');
+        const viewCompany = document.getElementById('view-company');
+        const viewDate = document.getElementById('view-date');
+        const viewBody = document.getElementById('view-body');
+        
+        // Categorías
+        const categoryElements = document.querySelectorAll('.sidebar-category');
+        
+        // Elementos de carga
+        const progressBar = document.getElementById('progress-bar');
+        const timeRemainingEl = document.getElementById('time-remaining');
+        const timerEl = document.getElementById('timer');
+        
+        // Estado de la aplicación
+        let currentCategory = 'inbox';
+        let messages = [];
+        let selectedMessageId = null;
+        let unsubscribe;
+        let logInterval;
+        let loadingTimer;
+        let remainingTime = 12;
+
+        function showAlert(elementId, message, isError = true) {
+            const alertBox = document.getElementById(elementId);
+            alertBox.textContent = message;
+            alertBox.className = `alert ${isError ? 'alert-danger' : 'alert-success'}`;
+        }
+        
+        function typeWriter(text, element, speed = 50) {
+            return new Promise(resolve => {
+                element.innerHTML = '';
+                element.classList.add('typing');
+                let i = 0;
+                const type = () => {
+                    if (i < text.length) {
+                        element.innerHTML += text.charAt(i);
+                        i++;
+                        setTimeout(type, speed);
+                    } else {
+                        element.classList.remove('typing');
+                        resolve();
+                    }
+                };
+                type();
+            });
+        }
+
+        function simulateLogs() {
+            const logOutput = document.getElementById('log-output');
+            const logs = [
+                'Iniciando conexión segura...',
+                'Clave pública recibida: OK.',
+                'Autenticando usuario...',
+                'Acceso concedido. UID: ************',
+                'Estableciendo enlace con Firestore...',
+                'Permisos de lectura verificados.',
+                'Esta plataforma fue diseñada para la empresa AdminLine gracias por confiar en nosotros.',
+                'Solicitando colección "contactMessages"...',
+                'Recibiendo snapshot de datos...',
+                'Renderizando interfaz del dashboard...',
+                'Byte Tu empresa de desarrollo digital.'
+            ];
+            let i = 0;
+            logInterval = setInterval(() => {
+                if (i < logs.length) {
+                    const logLine = document.createElement('p');
+                    logLine.className = 'log-line';
+                    logLine.textContent = `[OK] ${logs[i]}`;
+                    logOutput.appendChild(logLine);
+                    logOutput.scrollTop = logOutput.scrollHeight;
+                    i++;
+                } else {
+                    clearInterval(logInterval);
+                }
+            }, 550);
+        }
+
+        function startLoadingTimer() {
+            const startTime = Date.now();
+            const totalTime = 12000; // 12 segundos
+            
+            loadingTimer = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                remainingTime = (totalTime - elapsed) / 1000;
+                
+                if (remainingTime <= 0) {
+                    clearInterval(loadingTimer);
+                    remainingTime = 0;
+                    finishLoading();
+                }
+                
+                // Actualizar UI
+                const progress = ((totalTime - (remainingTime * 1000)) / totalTime) * 100;
+                progressBar.style.width = `${progress}%`;
+                timerEl.textContent = `${remainingTime.toFixed(1)}s`;
+                timeRemainingEl.textContent = `Tiempo restante: ${remainingTime.toFixed(1)} segundos`;
+            }, 100);
+        }
+
+        function finishLoading() {
+            clearInterval(loadingTimer);
+            clearInterval(logInterval);
+            
+            loadingContainer.classList.add('fade-out');
+            
+            setTimeout(() => {
+                loadingContainer.classList.add('hidden');
+                dashboardContainer.classList.remove('hidden');
+                document.body.style.backgroundImage = 'none';
+                document.body.style.backgroundColor = '#f8fafc';
+                footer.classList.remove('hidden');
+            }, 500);
+        }
+
+        async function startHackerLoading(email) {
+            document.getElementById('log-output').innerHTML = '';
+            const welcomeEl = document.getElementById('welcome-message');
+            const statusEl = document.getElementById('loading-status');
+            
+            await typeWriter(`Bienvenido, ${email}`, welcomeEl, 60);
+            await typeWriter('Estamos cargando los mensajes para ti...', statusEl, 60);
+            simulateLogs();
+            startLoadingTimer();
+        }
+
+        let isFirstAuthCheck = true;
+        auth.onAuthStateChanged(user => {
+            clearInterval(logInterval);
+            if (loadingTimer) clearInterval(loadingTimer);
+            
+            if (isFirstAuthCheck && user) {
+                auth.signOut();
+                isFirstAuthCheck = false;
+                return;
+            }
+            isFirstAuthCheck = false;
+
+            if (user) {
+                if (user.emailVerified) {
+                    authContainer.classList.add('hidden');
+                    verificationContainer.classList.add('hidden');
+                    loadingContainer.classList.remove('hidden');
+                    loadingContainer.classList.remove('fade-out');
+                    footer.classList.add('hidden');
+                    startHackerLoading(user.email);
+                    
+                    // Cargar mensajes pero mantener la pantalla de carga por 12 segundos
+                    loadMessages();
+                } else {
+                    authContainer.classList.add('hidden');
+                    verificationContainer.classList.remove('hidden');
+                }
+            } else {
+                authContainer.classList.remove('hidden');
+                dashboardContainer.classList.add('hidden');
+                verificationContainer.classList.add('hidden');
+                loadingContainer.classList.add('hidden');
+                footer.classList.remove('hidden');
+                document.body.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('./images/union.webp')`;
+            }
+        });
+
+        registerForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const email = registerForm.registerEmail.value;
+            const password = registerForm.registerPassword.value;
+            if (password !== registerForm.registerPasswordConfirm.value) {
+                showAlert('registerAlert', 'Las contraseñas no coinciden.'); return;
+            }
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(cred => cred.user.sendEmailVerification())
+                .then(() => {
+                    showAlert('registerAlert', '¡Registro exitoso! Revisa tu correo para verificar la cuenta.', false);
+                    registerForm.reset();
+                    setTimeout(() => {
+                        document.getElementById('registerView').classList.add('hidden');
+                        document.getElementById('loginView').classList.remove('hidden');
+                    }, 3000);
+                })
+                .catch(err => {
+                    let msg = (err.code === 'auth/email-already-in-use') ? 'Este correo ya está en uso.' : 'La contraseña debe tener al menos 6 caracteres.';
+                    showAlert('registerAlert', msg);
+                });
+        });
+
+        loginForm.addEventListener('submit', e => {
+            e.preventDefault();
+            auth.signInWithEmailAndPassword(loginForm.loginEmail.value, loginForm.loginPassword.value)
+                .catch(() => showAlert('loginAlert', 'Correo o contraseña incorrectos.'));
+        });
+
+        logoutButton.addEventListener('click', () => {
+            if (unsubscribe) unsubscribe();
+            if (loadingTimer) clearInterval(loadingTimer);
+            auth.signOut();
+        });
+
+        // Función para archivar mensaje
+        function archiveMessage(messageId) {
+            if (!messageId) return;
+            
+            db.collection('contactMessages').doc(messageId).update({
+                archived: true,
+                deleted: false
+            })
+            .then(() => {
+                console.log('Mensaje archivado correctamente');
+                renderMessages();
+            })
+            .catch(error => {
+                console.error('Error al archivar mensaje:', error);
+                alert('Error al archivar el mensaje. Verifica las reglas de seguridad.');
+            });
+        }
+
+        // Función para eliminar mensaje
+        function deleteMessage(messageId) {
+            if (!messageId) return;
+            
+            if (confirm('¿Estás seguro de que quieres eliminar este mensaje?')) {
+                db.collection('contactMessages').doc(messageId).update({
+                    deleted: true,
+                    archived: false
+                })
+                .then(() => {
+                    console.log('Mensaje marcado como eliminado');
+                    renderMessages();
+                })
+                .catch(error => {
+                    console.error('Error al eliminar mensaje:', error);
+                    alert('Error al eliminar el mensaje. Verifica las reglas de seguridad.');
+                });
+            }
+        }
+
+        // Función para marcar como leído
+        function markAsRead(messageId) {
+            if (!messageId) return;
+            
+            db.collection('contactMessages').doc(messageId).update({
+                read: true
+            })
+            .then(() => {
+                console.log('Mensaje marcado como leído');
+                renderMessages();
+            })
+            .catch(error => {
+                console.error('Error al marcar como leído:', error);
+            });
+        }
+
+        function loadMessages() {
+            if (unsubscribe) unsubscribe();
+            
+            unsubscribe = db.collection('contactMessages')
+                .orderBy('timestamp', 'desc')
+                .onSnapshot(snapshot => {
+                    messages = [];
+                    snapshot.forEach(doc => {
+                        const message = doc.data();
+                        message.id = doc.id;
+                        messages.push(message);
+                    });
+                    
+                    updateMessageCounts();
+                    renderMessages();
+                }, error => {
+                    console.error('Error cargando mensajes:', error);
+                });
+        }
+        
+        function updateMessageCounts() {
+            const inboxCount = messages.filter(m => !m.archived && !m.deleted).length;
+            const starredCount = messages.filter(m => m.starred && !m.archived && !m.deleted).length;
+            const archivedCount = messages.filter(m => m.archived && !m.deleted).length;
+            const deletedCount = messages.filter(m => m.deleted).length;
+            
+            document.getElementById('inbox-count').textContent = inboxCount;
+            document.getElementById('starred-count').textContent = starredCount;
+            document.getElementById('archived-count').textContent = archivedCount;
+            document.getElementById('deleted-count').textContent = deletedCount;
+        }
+        
+        function renderMessages() {
+            messagesList.innerHTML = '';
+            
+            const filteredMessages = messages.filter(message => {
+                if (currentCategory === 'inbox') return !message.archived && !message.deleted;
+                if (currentCategory === 'starred') return message.starred && !message.archived && !message.deleted;
+                if (currentCategory === 'archived') return message.archived && !message.deleted;
+                if (currentCategory === 'deleted') return message.deleted;
+                return true;
+            });
+            
+            if (filteredMessages.length === 0) {
+                messagesList.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #6b7280;">
+                        <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                        <p>No hay mensajes en esta categoría</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            filteredMessages.forEach(message => {
+                const messageRow = document.createElement('div');
+                messageRow.className = `message-row ${message.read ? '' : 'unread'}`;
+                messageRow.dataset.id = message.id;
+                
+                const date = message.timestamp ? message.timestamp.toDate() : new Date();
+                const formattedDate = formatDate(date);
+                
+                messageRow.innerHTML = `
+                    <div class="message-checkbox">
+                        <input type="checkbox" class="message-checkbox-input" data-id="${message.id}">
+                    </div>
+                    <div class="message-star ${message.starred ? 'starred' : ''}" data-id="${message.id}">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="message-sender">${message.name || 'Sin nombre'}</div>
+                    <div class="message-content">
+                        <div class="message-subject">${message.company || 'Consulta'}</div>
+                        <div class="message-preview">${message.message ? message.message.substring(0, 60) + '...' : 'Sin contenido'}</div>
+                    </div>
+                    <div class="message-date">${formattedDate}</div>
+                `;
+                
+                messageRow.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('message-checkbox-input') && 
+                        !e.target.classList.contains('message-star')) {
+                        viewMessage(message);
+                        selectedMessageId = message.id;
+                    }
+                });
+                
+                // Event listener para la estrella
+                const starElement = messageRow.querySelector('.message-star');
+                starElement.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleStar(message.id, !message.starred);
+                });
+                
+                messagesList.appendChild(messageRow);
+            });
+        }
+        
+        function viewMessage(message) {
+            // Cambiar a vista de mensaje
+            messagesList.style.display = 'none';
+            messageView.style.display = 'flex';
+            backToListBtn.style.display = 'flex';
+            
+            // Llenar datos del mensaje
+            const date = message.timestamp ? message.timestamp.toDate() : new Date();
+            const formattedDate = formatDate(date, true);
+            
+            viewSubject.textContent = message.company || 'Consulta';
+            viewSender.textContent = message.name || 'Sin nombre';
+            viewCompany.textContent = message.email || 'Sin email especificado';
+            viewDate.textContent = formattedDate;
+            viewBody.textContent = message.message || 'Sin contenido';
+            
+            // Marcar como leído si no lo está
+            if (!message.read) {
+                markAsRead(message.id);
+            }
+            
+            selectedMessageId = message.id;
+        }
+        
+        function toggleStar(messageId, isStarred) {
+            db.collection('contactMessages').doc(messageId).update({
+                starred: isStarred
+            })
+            .then(() => {
+                console.log('Mensaje destacado actualizado');
+                renderMessages();
+            })
+            .catch(error => {
+                console.error('Error al actualizar destacado:', error);
+            });
+        }
+        
+        function formatDate(date, full = false) {
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) {
+                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } else if (diffDays < 7) {
+                return date.toLocaleDateString([], { weekday: 'short' });
+            } else if (full) {
+                return date.toLocaleDateString();
+            } else {
+                return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+            }
+        }
+        
+        // Event listeners para categorías
+        categoryElements.forEach(category => {
+            category.addEventListener('click', () => {
+                // Actualizar categoría activa
+                categoryElements.forEach(cat => cat.classList.remove('active'));
+                category.classList.add('active');
+                
+                // Cambiar categoría actual
+                currentCategory = category.getAttribute('data-category');
+                
+                // Volver a la lista si estamos en vista de mensaje
+                messagesList.style.display = 'block';
+                messageView.style.display = 'none';
+                backToListBtn.style.display = 'none';
+                
+                // Renderizar mensajes de la categoría seleccionada
+                renderMessages();
+            });
+        });
+        
+        // Volver a la lista de mensajes
+        backToListBtn.addEventListener('click', () => {
+            messagesList.style.display = 'block';
+            messageView.style.display = 'none';
+            backToListBtn.style.display = 'none';
+            selectedMessageId = null;
+        });
+        
+        // Botones de herramientas
+        markAsReadBtn.addEventListener('click', () => {
+            if (selectedMessageId) {
+                markAsRead(selectedMessageId);
+            } else {
+                alert('Selecciona un mensaje primero');
+            }
+        });
+        
+        archiveBtn.addEventListener('click', () => {
+            if (selectedMessageId) {
+                archiveMessage(selectedMessageId);
+            } else {
+                alert('Selecciona un mensaje primero');
+            }
+        });
+        
+        deleteBtn.addEventListener('click', () => {
+            if (selectedMessageId) {
+                deleteMessage(selectedMessageId);
+            } else {
+                alert('Selecciona un mensaje primero');
+            }
+        });
+        
+        document.getElementById('showRegister').addEventListener('click', () => {
+            document.getElementById('loginView').classList.add('hidden');
+            document.getElementById('registerView').classList.remove('hidden');
+        });
+        document.getElementById('showLogin').addEventListener('click', () => {
+            document.getElementById('registerView').classList.add('hidden');
+            document.getElementById('loginView').classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>
